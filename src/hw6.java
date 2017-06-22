@@ -1,6 +1,5 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -240,15 +239,36 @@ class RBTree {
         return x;
     }
 
+    public Node Tree_Maximum(Node x) {
+        while (x.right != nil) {
+            x = x.right;
+        }
+        return x;
+    }
+
     public Node search (Node tree, int val) {
         if (tree == nil)
             return nil;
         else if (val == tree.val)
             return tree;
-        else if (val < tree.val)
-            return search(tree.left,val);
-        else
-            return search(tree.right,val);
+        else if (val < tree.val) {
+            if(tree.left == nil) {
+                Node a = nil;
+                a.left = tree.left;
+                a.right = tree.right;
+                return a;
+            }
+            return search(tree.left, val);
+        }
+        else {
+            if(tree.right == nil) {
+                Node a = nil;
+                a.left = tree.left;
+                a.right = tree.right;
+                return a;
+            }
+            return search(tree.right, val);
+        }
     }
     void print(Node tree) {
         if (tree.left != nil)
@@ -339,49 +359,50 @@ class Stack {
 
 public class hw6 {
     public static void main(String[] args) throws IOException {
-        File dir = new File("./input/");
-        File[] fileList = dir.listFiles();
-        try {
-            for (int i = 0; i < fileList.length; i++) {
-                File file = fileList[i];
-                if (file.isFile()) {
-                    BufferedReader br = new BufferedReader(new FileReader(file.getPath()));
-                    RBTree rb = new RBTree();
-                    int inserted = 0, deleted = 0, miss = 0;
-                    int total;
-                    while (true) {
-                        String line = br.readLine();
-                        if (line == null) break;
-                        line = line.trim();
-                        int num = Integer.parseInt(line);
-                        if (num > 0) {
-                            rb.insert(rb, new Node(num));
-                            inserted++;
-                        } else if (num < 0) {
-                            if (rb.search(rb.root, -num) != rb.nil) {
-                                rb.delete(rb, rb.search(rb.root, -num));
-                                deleted++;
-                            } else {
-                                miss++;
-                            }
-                        } else
-                            break;
-                    }
-                    total = inserted - deleted;
-                    System.out.println("filename= " + file.getName());
-                    System.out.println("total= " + total);
-                    System.out.println("insert= " + inserted);
-                    System.out.println("deleted= " + deleted);
-                    System.out.println("miss= " + miss);
-                    System.out.println("nb= " + rb.GetBlackNode());
-                    System.out.println("bh= " + rb.GetBlackHeight());
-                    rb.print(rb.root);
-                    br.close();
+        BufferedReader br = new BufferedReader(new FileReader("input.txt"));
+        RBTree rb = new RBTree();
+        while (true) {
+            String line = br.readLine();
+            if (line == null) break;
+            line = line.trim();
+            int num = Integer.parseInt(line);
+            if (num > 0) {
+                rb.insert(rb, new Node(num));
+            } else if (num < 0) {
+                if (rb.search(rb.root, -num) != rb.nil) {
+                    rb.delete(rb, rb.search(rb.root, -num));
                 }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+            } else
+                break;
         }
+        br = new BufferedReader(new FileReader("search.txt"));
+        while (true) {
+            String line = br.readLine();
+            if (line == null) break;
+            line = line.trim();
+            int num = Integer.parseInt(line);
+            if (num == 0) break;
+            Node a = rb.search(rb.root, num);
+            Node b = rb.Tree_Minimum(a.right);
+            Node c = rb.Tree_Maximum(a.left);
+            if(c.val == 0) {
+                System.out.print("NIL ");
+            }
+            else
+                System.out.print(c.val + " ");
+            if(a.val == 0) {
+                System.out.print("NIL ");
+            }
+            else
+                System.out.print(a.val + " ");
+            if(b.val == 0) {
+                System.out.println("NIL");
+            }
+            else
+                System.out.println(b.val);
+
+        }
+        br.close();
     }
 }
 
